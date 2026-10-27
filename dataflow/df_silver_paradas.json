@@ -18,7 +18,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "dw_silver_paradas_sql",
+						"referenceName": "salida_temporal",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
@@ -64,36 +64,13 @@
 				"          VigenciaHasta = iif(instr(VigenciaHasta, '/') > 0, toDate(VigenciaHasta, 'dd/MM/yyyy'), toDate(VigenciaHasta, 'yyyy-MM-dd'))) ~> derivedColumn3",
 				"derivedColumn3 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     input(",
-				"          ParadaHistoricaId as string,",
-				"          CodigoPublicado as string,",
-				"          NombreParada as string,",
-				"          Zona as string,",
-				"          Latitud as decimal(9,6),",
-				"          Longitud as decimal(9,6),",
-				"          VigenciaDesde as date,",
-				"          VigenciaHasta as date,",
-				"          Estado as string",
-				"     ),",
-				"     deletable:false,",
-				"     insertable:true,",
-				"     updateable:false,",
-				"     upsertable:false,",
-				"     format: 'table',",
+				"     partitionFileNames:['silver_parada.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError',",
-				"     mapColumn(",
-				"          ParadaHistoricaId,",
-				"          CodigoPublicado,",
-				"          NombreParada,",
-				"          Zona,",
-				"          Latitud,",
-				"          Longitud,",
-				"          VigenciaDesde,",
-				"          VigenciaHasta,",
-				"          Estado",
-				"     )) ~> sink1"
+				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
 	}
